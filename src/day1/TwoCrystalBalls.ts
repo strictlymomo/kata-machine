@@ -3,7 +3,7 @@ export default function two_crystal_balls(breaks: boolean[]): number {
     let i = jumpAmount;
     let answer = -1;
 
-    // Keep going with first ball until breaks equals true
+    // Keep jumping intervals of sqrt n with first ball until it breaks
     for (; i < breaks.length; i += jumpAmount) {
         if (breaks[i]) {
             break;
@@ -16,6 +16,7 @@ export default function two_crystal_balls(breaks: boolean[]): number {
     // Go back to last known point that didn't break
     i -= jumpAmount;
 
+    // Walk one-by-one until you find where it exactly breaks
     for (; i < brokeAt; i++) {
         if (breaks[i]) {
             answer = i;
