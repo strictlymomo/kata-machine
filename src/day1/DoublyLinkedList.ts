@@ -73,6 +73,7 @@ export default class DoublyLinkedList<T> {
     constructor() {}
 
     prepend(item: T): void {
+        this.printAll();
         const node = new Node(item);
 
         if (!this.head) {
@@ -83,7 +84,7 @@ export default class DoublyLinkedList<T> {
             this.head = node;
         }
 
-        this.length = this.length + 1;
+        this.length++;
     }
 
     append(item: T): void {
@@ -96,10 +97,26 @@ export default class DoublyLinkedList<T> {
             tail.next = node;
             node.prev = tail;
         }
-        this.length = this.length + 1;
+        this.length++;
     }
 
-    // insertAt(item: T, idx: number): void {}
+    insertAt(item: T, idx: number): void {
+        const nodeAtIdx = this.getNodeAtIndex(idx);
+        console.log("nodeAtIdx", nodeAtIdx);
+        if (!nodeAtIdx) {
+            this.append(item);
+        } else {
+            const node = new Node(item);
+            const prevNodeAtIdx = nodeAtIdx.prev;
+            if (prevNodeAtIdx) {
+                prevNodeAtIdx.next = node;
+                node.prev = prevNodeAtIdx;
+            }
+            nodeAtIdx.prev = node;
+            node.next = nodeAtIdx;
+        }
+        this.length++;
+    }
 
     remove(item: T): T | undefined {
         const node = this.getNode(item);
@@ -110,6 +127,8 @@ export default class DoublyLinkedList<T> {
             const nextNode = node.next;
             if (prevNode) {
                 prevNode.next = nextNode;
+            } else {
+                this.head = nextNode;
             }
             if (nextNode) {
                 nextNode.prev = prevNode;
@@ -117,13 +136,43 @@ export default class DoublyLinkedList<T> {
             node.prev = null;
             node.next = null;
 
-            this.length = this.length - 1;
+            this.length--;
             return node.data;
         }
     }
 
-    // get(idx: number): T | undefined {}
-    // removeAt(idx: number): T | undefined {}
+    get(idx: number): T | undefined {
+        let node = this.head;
+        for (let i = 0; i < idx; i++) {
+            if (node) {
+                node = node.next;
+            }
+        }
+        return node ? node.data : undefined;
+    }
+
+    removeAt(idx: number): T | undefined {
+        const node = this.getNodeAtIndex(idx);
+        if (!node) {
+            return undefined;
+        } else {
+            const prevNode = node.prev;
+            const nextNode = node.next;
+            if (prevNode) {
+                prevNode.next = nextNode;
+            } else {
+                this.head = nextNode;
+            }
+            if (nextNode) {
+                nextNode.prev = prevNode;
+            }
+            node.prev = null;
+            node.next = null;
+
+            this.length--;
+            return node.data;
+        }
+    }
 
     getTail(node: Node<T>): Node<T> {
         return node.next ? this.getTail(node.next) : node;
@@ -141,12 +190,20 @@ export default class DoublyLinkedList<T> {
         return curr;
     }
 
+    getNodeAtIndex(idx: number): Node<T> | null {
+        let node = this.head;
+        for (let i = 0; i < idx; i++) {
+            if (node) {
+                node = node.next;
+            }
+        }
+        return node;
+    }
+
     printAll(): void {
         let curr = this.head;
         while (curr) {
             console.dir(curr, { depth: 10 });
-            console.log(`  `);
-            console.log(`  `);
             curr = curr.next;
         }
         console.log(`   length: ${this.length}`);
@@ -165,5 +222,5 @@ list.prepend("B");
 list.prepend("A");
 list.append("D");
 list.append("E");
-list.remove("F");
-list.printAll();
+list.insertAt("Z", 3);
+list.removeAt(4);
